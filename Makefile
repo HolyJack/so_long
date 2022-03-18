@@ -1,64 +1,49 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: ejafer <ejafer@student.42.fr>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/02/03 16:45:53 by ejafer            #+#    #+#              #
-#    Updated: 2022/02/03 17:24:01 by ejafer           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME			=	so_long
 
+INC_DIR	= include/
+SRC_DIR	= src/
+OBJ_DIR	= obj/
 
-NAME1		= server
-NAME2		= client
+INC_DIR_G = /usr/include
+MLX_DIR	  = mlx/
+MLX		  = mlx
+MLX_LINUX = mlx_Linux
 
-HDR_DIR		= includes/
-SRC_DIR		= src/
-OBJ_DIR		= obj/
+NAMES   = 	so_long sl_field sl_game sl_render\
+			sl_inputs sl_arrlen sl_arrchr\
+			get_next_line get_next_line_utils\
+			sl_free_field\
+			ft_putnbr_fd ft_putstr_fd ft_putchar_fd
 
-HDR			= minitalk.h
+SRC		= $(addprefix $(SRC_DIR), $(addsuffix .c, $(NAMES)))
+OBJ 	= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(NAMES)))
 
+CC		= cc
+CFLAGS	= -Wall -Wextra -Werror
+OPFLAGS	= -O3
 
-SRC1_NAMES	= mt_server utils_server
-SRC2_NAMES	= mt_client utils_client
+RM		= rm -f
+MD		= mkdir -p
 
-SRC1		= $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC1_NAMES)))
-OBJ1		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC1_NAMES)))
-D1_FILES	= $(addprefix $(OBJ_DIR), $(addsuffix .d, $(SRC1_NAMES)))
+all : $(NAME)
 
-SRC2		= $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC2_NAMES)))
-OBJ2		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC2_NAMES)))
-D2_FILES	= $(addprefix $(OBJ_DIR), $(addsuffix .d, $(SRC2_NAMES)))
+$(NAME): $(OBJ) Makefile
+		@$(CC) $(CFLAGS) $(OPFLAGS) $(OBJ) -L$(MLX_DIR) -l$(MLX_LINUX) -L/usr/lib -I$(MLX_DIR) -lXext -lX11 -lm -lz -o ${NAME}
+		@echo "\033[32mCompiled"
 
+mlx/mlx_Linux:
+		 @$(MAKE) -C $(MLX_DIR) --silent
 
-CC			= cc
-CFLAGS		= -Wall -Wextra -Werror
-OFLAGS		=
-
-MD			= mkdir -p
-RM			= rm -f
-
-all: ${NAME1} ${NAME2}
-
-$(NAME1): ${HDR_DIR}${HDR} ${OBJ1}
-	${CC} ${CFLAGS} ${OPFLAGS} -I${HDR_DIR} ${OBJ1} -o ${NAME1}
-
-$(NAME2): ${HDR_DIR}${HDR} ${OBJ2}
-	${CC} ${CFLAGS} ${OPFLAGS} -I${HDR_DIR} ${OBJ2} -o ${NAME2}
-
-${OBJ_DIR}%.o: ${SRC_DIR}%.c ${HDR_DIR}${HDR}
-	@${MD} ${OBJ_DIR}
-	$(CC) $(CFLAGS) $(OPFLAGS) -I${HDR_DIR} -c $< -o $@ -MD
-
-include $(wildcard $(D_FILES))
+$(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c | mlx/mlx_Linux
+		@$(MD) $(OBJ_DIR)
+		@$(CC) $(CFLAGS) $(OPFLAGS) -c -I$(INC_DIR) -I$(INC_DIR_G) -I$(MLX_DIR) $< -L$(MLX_DIR) -l$(MLX_LINUX) -o $@
 
 clean:
-	${RM} ${OBJ1} ${OBJ2} ${D1_FILES} ${D2_FILES}
+		@$(RM) $(OBJ)
 fclean: clean
-	${RM} ${NAME1} ${NAME2}
+		@$(MAKE) -C $(MLX_DIR) --silent clean
+		@$(RM) $(NAME)
 
-re: clean fclean all
-
-.PHONY: re clean fclean all
+re: fclean all
+	
+.PHONY: clean fclean re all
