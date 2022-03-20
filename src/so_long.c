@@ -6,7 +6,7 @@
 /*   By: ejafer <ejafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 16:49:59 by ejafer            #+#    #+#             */
-/*   Updated: 2022/03/14 18:13:23 by ejafer           ###   ########.fr       */
+/*   Updated: 2022/03/20 15:40:30 by ejafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ int	main(int argc, char **argv)
 	void	*mlx;
 	void	*win;
 
-	mlx = mlx_init();
 	if (argc != 2)
-		return (0);
-	field = sl_init_field(argv[1], mlx);
+		sl_error_exit();
+	field = sl_init_field(argv[1]);
+	mlx = mlx_init();
 	sl_readassets(field, mlx);
 	win = mlx_new_window(mlx,
 			SCALING * ft_strlen(field->map[0]),
@@ -57,7 +57,7 @@ int	main(int argc, char **argv)
 	data = sl_init_data(mlx, win, field);
 	if (!sl_validate_map(field->map))
 	{
-		ft_putstr_fd("Error!\n", 2);
+		ft_putstr_fd("Error\n", 2);
 		sl_exit(data);
 	}
 	mlx_hook(win, 2, 1L << 0, sl_inputs, data);

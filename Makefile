@@ -9,37 +9,40 @@ MLX_DIR	  = mlx/
 MLX		  = mlx
 MLX_LINUX = mlx_Linux
 
-NAMES   = 	so_long sl_field sl_game sl_render\
-			sl_inputs sl_arrlen sl_arrchr\
-			get_next_line get_next_line_utils\
-			sl_free_field\
-			ft_putnbr_fd ft_putstr_fd ft_putchar_fd
+NAMES   = 	so_long			sl_field		sl_game\
+			sl_inputs		sl_arrlen		sl_arrchr\
+			get_next_line	sl_error_exit	get_next_line_utils\
+			sl_free_field	sl_render		ft_strncmp\
+			ft_putnbr_fd 	ft_putstr_fd	ft_putchar_fd\
 
-SRC		= $(addprefix $(SRC_DIR), $(addsuffix .c, $(NAMES)))
-OBJ 	= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(NAMES)))
+SRC		=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(NAMES)))
+OBJ 	=	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(NAMES)))
+D_FILES	=	$(addprefix $(OBJ_DIR), $(addsuffix .d, $(NAMES)))
+
 
 CC		= cc
-CFLAGS	= -Wall -Wextra -Werror
-OPFLAGS	= -O3
+CFLAGS	= -Wall -Wextra -Werror -O3
 
-RM		= rm -f
 MD		= mkdir -p
 
 all : $(NAME)
 
-$(NAME): $(OBJ) Makefile
-		@$(CC) $(CFLAGS) $(OPFLAGS) $(OBJ) -L$(MLX_DIR) -l$(MLX_LINUX) -L/usr/lib -I$(MLX_DIR) -lXext -lX11 -lm -lz -o ${NAME}
-		@echo "\033[32mCompiled"
+$(MLX_DIR)$(MLX):
+			@$(MAKE) -C $(MLX_DIR)
 
-mlx/mlx_Linux:
-		 @$(MAKE) -C $(MLX_DIR) --silent
+$(NAME):	$(OBJ) Makefile | $(MLX_DIR)$(MLX)
+			$(CC) $(CFLAGS) $(OBJ) -L$(MLX_DIR) -l$(MLX_LINUX) -lXext -lX11 -lm -lz -o ${NAME}
 
-$(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.c | mlx/mlx_Linux
-		@$(MD) $(OBJ_DIR)
-		@$(CC) $(CFLAGS) $(OPFLAGS) -c -I$(INC_DIR) -I$(INC_DIR_G) -I$(MLX_DIR) $< -L$(MLX_DIR) -l$(MLX_LINUX) -o $@
+$(OBJ_DIR):
+			@$(MD) $(OBJ_DIR)
+
+$(OBJ):		$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
+			$(CC) $(CFLAGS) -c -I$(INC_DIR) -I$(INC_DIR_G) -I$(MLX_DIR) $< -L$(MLX_DIR) -l$(MLX_LINUX) -o $@ -MD
+include $(wildcard $(D_FILES))
 
 clean:
-		@$(RM) $(OBJ)
+		@$(RM) $(OBJ) ${D_FILES}
+	
 fclean: clean
 		@$(MAKE) -C $(MLX_DIR) --silent clean
 		@$(RM) $(NAME)

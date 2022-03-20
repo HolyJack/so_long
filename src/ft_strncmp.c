@@ -1,32 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sl_inputs.c                                        :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ejafer <ejafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/19 16:49:45 by ejafer            #+#    #+#             */
-/*   Updated: 2022/03/18 22:26:16 by ejafer           ###   ########.fr       */
+/*   Created: 2021/10/11 14:00:31 by ejafer            #+#    #+#             */
+/*   Updated: 2022/03/20 15:31:32 by ejafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-int	sl_exit(t_data *data)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	mlx_destroy_window(data->mlx, data->win);
-	sl_free_field(data->mlx, data->field);
-	mlx_destroy_display(data->mlx);
-	free(data->mlx);
-	free(data);
-	exit(0);
-}
+	char	*str1;
+	char	*str2;
 
-int	sl_inputs(int keycode, t_data *data)
-{
-	if (keycode == ESCAPE)
-		sl_exit(data);
-	if (keycode == W || keycode == A || keycode == S || keycode == D)
-		data->update = sl_game(keycode, data->field);
+	str1 = (char *) s1;
+	str2 = (char *) s2;
+	if (n == 0)
+		return (0);
+	while (n-- > 0)
+	{
+		if (*str1 != *str2)
+			return ((unsigned char) *str1 - (unsigned char) *str2);
+		if (*str1 == '\0')
+			return (0);
+		str1++;
+		str2++;
+	}
 	return (0);
 }

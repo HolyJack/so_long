@@ -6,7 +6,7 @@
 /*   By: ejafer <ejafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 16:44:45 by ejafer            #+#    #+#             */
-/*   Updated: 2022/03/14 18:15:55 by ejafer           ###   ########.fr       */
+/*   Updated: 2022/03/20 15:53:15 by ejafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,24 +53,35 @@ int	sl_count_strings(int fd)
 	return (count);
 }
 
-void	sl_exit_at_read(void *mlx)
+int	sl_isvalid_filename(char *map_name)
 {
-	ft_putstr_fd("Error\n", 2);
-	mlx_destroy_display(mlx);
-	free(mlx);
-	exit(0);
+	int	fd;
+
+	if (ft_strlen(map_name) < 4
+		|| !ft_strncmp(map_name + ft_strlen(map_name) - 3, ".ber", 5))
+		return (0);
+	fd = open(map_name, O_DIRECTORY);
+	if (fd > 0)
+	{
+		close(fd);
+		return (0);
+	}
+	fd = open(map_name, O_RDONLY);
+	if (fd < 0)
+		return (0);
+	return (fd);
 }
 
-char	**sl_readmap(char *map_name, void *mlx)
+char	**sl_readmap(char *map_name)
 {
 	char	**array;
 	int		fd;
 	int		count;
 	char	*tmp;
 
-	fd = open(map_name, O_RDONLY);
-	if (fd == -1)
-		sl_exit_at_read(mlx);
+	fd = sl_isvalid_filename(map_name);
+	if (!fd)
+		sl_error_exit();
 	count = sl_count_strings(fd);
 	close(fd);
 	array = malloc(sizeof(char *) * (count + 1));
@@ -89,12 +100,12 @@ char	**sl_readmap(char *map_name, void *mlx)
 	return (array);
 }
 
-t_field	*sl_init_field(char *map_name, void *mlx)
+t_field	*sl_init_field(char *map_name)
 {
 	t_field	*field;
 	char	**map;
 
-	map = sl_readmap(map_name, mlx);
+	map = sl_readmap(map_name);
 	field = malloc(sizeof(t_field));
 	field->map = map;
 	field->steps = 0;
