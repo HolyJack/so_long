@@ -6,7 +6,7 @@
 /*   By: ejafer <ejafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 16:44:45 by ejafer            #+#    #+#             */
-/*   Updated: 2022/03/20 15:53:15 by ejafer           ###   ########.fr       */
+/*   Updated: 2022/03/22 12:22:43 by ejafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	sl_isvalid_filename(char *map_name)
 {
 	int	fd;
 
-	if (ft_strlen(map_name) < 4
+	if (ft_strlen(map_name) < 5
 		|| !ft_strncmp(map_name + ft_strlen(map_name) - 3, ".ber", 5))
 		return (0);
 	fd = open(map_name, O_DIRECTORY);
